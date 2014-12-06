@@ -4,12 +4,16 @@ angular
         var self = this;
         self.device = null;
 
+        function _unplug() {
+            self.device.onmidimessage = null;
+            self.device = null;
+        }
+
         function _plug(device) {
             if(self.device) {
-                self.device.onmidimessage = null;
-                self.device = null;
+                _unplug();
             }
-            
+
             self.device = device;
             self.device.onmidimessage = _onmidimessage;
         }
@@ -21,7 +25,7 @@ angular
             * e[1] = midi note
             * e[2] = velocity (64 if 'off')
             */
-            console.log('MIDI MESSAGE', e.data);
+            console.log('MIDI MESSAGE', e.receivedTime, e.data);
         };
 
         return {

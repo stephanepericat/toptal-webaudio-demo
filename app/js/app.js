@@ -9,7 +9,7 @@ angular
                 if('function' === typeof access.inputs) {
                     // deprecated
                     // $scope.devices = access.inputs();
-                    console.warn('update your Chrome version!');
+                    console.error('Update your Chrome version!');
                 } else {
                     if(access.inputs && access.inputs.size > 0) {
                         var inputs = access.inputs.values(),
@@ -20,15 +20,18 @@ angular
                             $scope.devices.push(input.value);
                         }
                     } else {
-                        console.error('no devices!');
+                        console.error('No devices detected!');
                     }
 
                 }
+            })
+            .catch(function(e) {
+                console.error(e);
             });
 
         $scope.$watch('activeDevice', function(device) {
             if(device) {
-                // attache the midi device to the audio source
+                // attach the midi device to the audio source
                 DSP.plug(device);
                 console.log('active device: %s %s', device.manufacturer, device.name);
             }
