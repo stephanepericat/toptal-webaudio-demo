@@ -1,8 +1,17 @@
 angular
     .module('WebAudio', [])
     .service('OSC', function() {
+        var self;
+
         function Oscillator(ctx) {
-            return ctx.createOscillator();
+            self = this;
+            self.osc = ctx.createOscillator();
+
+            return self;
+        }
+
+        Oscillator.prototype.setOscType = function(type) {
+            self.osc.type = type || 'sine';
         }
 
         return Oscillator;
@@ -10,12 +19,16 @@ angular
     .factory('AudioEngine', ['OSC', function(Oscillator) {
         var self = this;
 
+        // audio context
         self.ctx = new AudioContext();
+
+        // osc1
+        self.osc1 = new Oscillator(self.ctx);
+        self.osc1.setOscType('sine'); //sine, square, triangle, sawtooth
 
         return {
             init: function() {
-                var osc1 = new Oscillator(self.ctx);
-                console.log('OSCILLATOR', osc1);
+                console.log('OSCILLATOR', self.osc1);
             }
         };
     }])
