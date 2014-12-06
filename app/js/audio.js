@@ -1,8 +1,29 @@
 angular
     .module('WebAudio', [])
-    .factory('DSP', [function() {
+    .service('OSC', function() {
+        function Oscillator(ctx) {
+            return ctx.createOscillator();
+        }
+
+        return Oscillator;
+    })
+    .factory('AudioEngine', ['OSC', function(Oscillator) {
+        var self = this;
+
+        self.ctx = new AudioContext();
+
+        return {
+            init: function() {
+                var osc1 = new Oscillator(self.ctx);
+                console.log('OSCILLATOR', osc1);
+            }
+        };
+    }])
+    .factory('DSP', ['AudioEngine', function(Engine) {
         var self = this;
         self.device = null;
+
+        Engine.init();
 
         function _unplug() {
             self.device.onmidimessage = null;
@@ -25,7 +46,7 @@ angular
             * e[1] = midi note
             * e[2] = velocity (64 if 'off')
             */
-            console.log('MIDI MESSAGE', e.receivedTime, e.data);
+            console.log('MIDI MESSAGE', parseInt(e.receivedTime), e.data);
         };
 
         return {
