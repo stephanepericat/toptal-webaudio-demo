@@ -8,4 +8,4 @@ Demo files supporting the Toptal blog article about webaudio
     npm i && bower i
     npm start
 
-Go to http://localhost:3000/
+Go to [http://localhost:3000/](http://localhost:3000/)
