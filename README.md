@@ -18,4 +18,4 @@ Go to [http://localhost:3000/](http://localhost:3000/)
 
 Any MIDI device should be picked up by the demo.
 
-Remember to connect your MIDI device *before* starting your browser.
+Remember to connect your MIDI device __before__ starting your browser.
