@@ -1,0 +1,27 @@
+{
+  "name": "toptal-webaudio-demo",
+  "version": "1.0.0",
+  "description": "Demo files supporting the Toptal blog article about webaudio",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/stephanepericat/toptal-webaudio-demo.git"
+  },
+  "keywords": [
+    "webaudio",
+    "demo",
+    "toptal"
+  ],
+  "author": "Stéphane P. Péricat <contact@pericat.net>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/stephanepericat/toptal-webaudio-demo/issues"
+  },
+  "homepage": "https://github.com/stephanepericat/toptal-webaudio-demo",
+  "dependencies": {
+    "express": "^4.10.4"
+  }
+}
