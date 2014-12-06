@@ -5,7 +5,7 @@ Demo files supporting the Toptal blog article about webaudio
 
 ##Compatibility##
 
-Google Chrome 39+ with experimental JavaScript flag enabled.
+Google Chrome 39+ with #enable-web-midi flag enabled.
 
 ##How To Use##
 

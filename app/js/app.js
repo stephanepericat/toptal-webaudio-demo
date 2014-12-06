@@ -1,46 +1,36 @@
 angular
     .module('Synth', ['WebAudio', 'WebMIDI'])
-    .controller('SynthCtrl', ['$scope', 'Devices', function($scope, Devices) {
+    .controller('SynthCtrl', ['$scope', 'Devices', 'DSP', function($scope, Devices, DSP) {
         $scope.devices = [];
 
         Devices
             .connect()
             .then(function(access) {
-
                 if('function' === typeof access.inputs) {
                     // deprecated
                     // $scope.devices = access.inputs();
-                    // $($scope.devices).each(function(idx, device) {
-                    //     device.onmidimessage = function(e) {
-                    //         if($scope.activeDevice && $scope.activeDevice.name === this.name) {
-                    //             console.log('active device');
-                    //             console.log('MIDI MESSAGE', e);
-                    //         }
-                    //     };
-                    // });
+                    console.warn('update your Chrome version!');
                 } else {
-                    var inputs = access.inputs.values(),
-                    input, device;
+                    if(access.inputs && access.inputs.size > 0) {
+                        var inputs = access.inputs.values(),
+                        input, device;
 
-                    for (input = inputs.next(); input && !input.done; input = inputs.next()) {
-                        device = input.value;
-
-                        device.onmidimessage = function(e) {
-                            if($scope.activeDevice && $scope.activeDevice.name === this.name) {
-                                console.log('active device');
-                                console.log('MIDI MESSAGE', e);
-                            }
-                        };
-
-                        $scope.devices.push(device);
+                        // iterate through the devices
+                        for (input = inputs.next(); input && !input.done; input = inputs.next()) {
+                            $scope.devices.push(input.value);
+                        }
+                    } else {
+                        console.error('no devices!');
                     }
+
                 }
             });
 
-        $scope.$watch('activeDevice', function(n, o) {
-            if(n) {
-                console.log(n);
-                console.log('active device: %s %s', n.manufacturer, n.name);
+        $scope.$watch('activeDevice', function(device) {
+            if(device) {
+                // attache the midi device to the audio source
+                DSP.plug(device);
+                console.log('active device: %s %s', device.manufacturer, device.name);
             }
         });
     }]);
