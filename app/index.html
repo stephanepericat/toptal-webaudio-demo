@@ -5,8 +5,14 @@
         <link href="/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
     </head>
     <body>
-        <h1>webaudio synth</h1>
-        <div class="synth" ng-controller="SynthCtrl"></div>
+        <div class="synth container" ng-controller="SynthCtrl">
+            <h1>webaudio synth</h1>
+            <div class="form-group">
+                <select ng-model="activeDevice" class="form-control" ng-options="device.manufacturer + ' ' + device.name for device in devices">
+                    <option value="" disabled>Choose a MIDI device...</option>
+                </select>
+            </div>
+        </div>
 
         <script src="/vendors/jquery/dist/jquery.min.js"></script>
         <script src="/vendors/angular/angular.min.js"></script>
