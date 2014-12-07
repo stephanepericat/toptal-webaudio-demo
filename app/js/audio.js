@@ -11,6 +11,18 @@ angular
             return self;
         }
 
+        Gain.prototype.setVolume = function(volume, time) {
+            self.gain.gain.setTargetAtTime(volume, 0, time);
+        }
+
+        Gain.prototype.connect = function(i) {
+            self.gain.connect(i);
+        }
+
+        Gain.prototype.cancel = function() {
+            self.gain.gain.cancelScheduledValues(0);
+        }
+
         return Gain;
     })
     .service('OSC', function() {
@@ -28,13 +40,36 @@ angular
         }
 
         Oscillator.prototype.setFrequency = function(freq, time) {
-            self.osc.frequency.setValueAtTime(freq, time);
+            self.osc.frequency.setTargetAtTime(freq, 0, time);
         };
+
+        Oscillator.prototype.start = function(pos) {
+            self.osc.start(pos);
+        }
+
+        Oscillator.prototype.stop = function(pos) {
+            self.osc.stop(pos);
+        }
+
+        Oscillator.prototype.connect = function(i) {
+            self.osc.connect(i);
+        }
+
+        Oscillator.prototype.cancel = function() {
+            self.osc.frequency.cancelScheduledValues(0);
+        }
 
         return Oscillator;
     })
     .factory('AudioEngine', ['OSC', 'AMP', '$window', function(Oscillator, Amp, $window) {
         var self = this;
+
+        self.activeNotes = [];
+        self.settings = {
+            attack: 0.05,
+            release: 0.05,
+            portamento: 0.05
+        };
 
         function _createContext() {
             self.ctx = new $window.AudioContext();
@@ -52,8 +87,10 @@ angular
         }
 
         function _wire() {
-            self.osc1.osc.connect(self.amp.gain);
-            self.amp.gain.connect(self.ctx.destination);
+            self.osc1.connect(self.amp.gain);
+            self.amp.connect(self.ctx.destination);
+            self.amp.setVolume(0.0, 0); //mute the sound
+            self.osc1.start(0); // start osc1
         }
 
         function _mtof(note) {
@@ -61,11 +98,29 @@ angular
         }
 
         function _noteOn(note, velocity) {
-            console.log('note on', note, velocity);
+            self.activeNotes.push(note);
+
+            self.osc1.cancel();
+            self.osc1.setFrequency(_mtof(note), self.settings.portamento);
+
+            self.amp.cancel();
+            self.amp.setVolume(1.0, self.settings.attack);
         }
 
         function _noteOff(note) {
-            console.log('note off', note);
+            var position = self.activeNotes.indexOf(note);
+            if (position !== -1) {
+                self.activeNotes.splice(position, 1);
+            }
+
+            if (self.activeNotes.length === 0) {
+                // shut off the envelope
+                self.amp.cancel();
+                self.amp.setVolume(0.0, self.settings.release);
+            } else {
+                self.osc1.cancel();
+                self.osc1.setFrequency(_mtof(self.activeNotes[self.activeNotes.length - 1]), self.settings.portamento);
+            }
         }
 
         return {
@@ -80,9 +135,7 @@ angular
         };
     }])
     .factory('DSP', ['AudioEngine', function(Engine) {
-        var self = this
-            activeNotes = [];
-
+        var self = this;
         self.device = null;
 
         Engine.init();
