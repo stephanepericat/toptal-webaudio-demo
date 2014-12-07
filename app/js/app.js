@@ -1,9 +1,9 @@
 angular
     .module('Synth', ['WebAudio', 'WebMIDI'])
-    .controller('SynthCtrl', ['$scope', 'Devices', 'DSP', function($scope, Devices, DSP) {
+    .controller('SynthCtrl', ['$scope', 'Devices', 'DSP', function($scope, devices, DSP) {
         $scope.devices = [];
 
-        Devices
+        devices
             .connect()
             .then(function(access) {
                 if('function' === typeof access.inputs) {
