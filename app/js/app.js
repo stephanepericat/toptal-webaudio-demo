@@ -29,13 +29,9 @@ angular
                 console.error(e);
             });
 
-        $scope.$watch('activeDevice', function(device) {
-            if(device) {
-                // attach the midi device to the audio source
-                DSP.plug(device);
-                console.log('active device: %s %s', device.manufacturer, device.name);
-            }
-        });
+        // watchers
+        $scope.$watch('activeDevice', DSP.plug);
+        $scope.$watch('synth.oscType', DSP.setOscType);
     }]);
 
 angular

@@ -131,7 +131,14 @@ angular
                 _wire();
             },
             noteOn: _noteOn,
-            noteOff: _noteOff
+            noteOff: _noteOff,
+            osc: {
+                setType: function(type) {
+                    if(type && self && self.osc1) {
+                        self.osc1.setOscType(type);
+                    }
+                }
+            }
         };
     }])
     .factory('DSP', ['AudioEngine', function(Engine) {
@@ -146,13 +153,15 @@ angular
         }
 
         function _plug(device) {
-            // unplug any already connected device
-            if(self.device) {
-                _unplug();
-            }
+            if(device) {
+                // unplug any already connected device
+                if(self.device) {
+                    _unplug();
+                }
 
-            self.device = device;
-            self.device.onmidimessage = _onmidimessage;
+                self.device = device;
+                self.device.onmidimessage = _onmidimessage;
+            }
         }
 
         function _onmidimessage(e) {
@@ -173,6 +182,7 @@ angular
         };
 
         return {
-            plug: _plug
+            plug: _plug,
+            setOscType: Engine.osc.setType
         };
     }]);
