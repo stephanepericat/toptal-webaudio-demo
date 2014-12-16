@@ -1,6 +1,6 @@
 angular
-    .module('Synth', ['WebAudio', 'WebMIDI'])
-    .controller('SynthCtrl', ['$scope', 'Devices', 'DSP', function($scope, devices, DSP) {
+    .module('WebSynth', ['WebAudio', 'WebMIDI', 'Synth'])
+    .controller('WebSynthCtrl', ['$scope', 'Devices', 'DSP', function($scope, devices, DSP) {
         $scope.devices = [];
 
         $scope.oscTypes = ['sine', 'square', 'triangle', 'sawtooth'];
@@ -48,5 +48,5 @@ angular
 angular
     .element(document)
     .ready(function() {
-        angular.bootstrap(document.body, ['Synth']);
+        angular.bootstrap(document.body, ['WebSynth']);
     })
