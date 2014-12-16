@@ -3,6 +3,9 @@ angular
     .controller('SynthCtrl', ['$scope', 'Devices', 'DSP', function($scope, devices, DSP) {
         $scope.devices = [];
 
+        $scope.oscTypes = ['sine', 'square', 'triangle', 'sawtooth'];
+        $scope.filterTypes = ['lowpass', 'highpass', 'bandpass'];
+
         $scope.synth = {
             oscType: 'sine',
             filterType: 'lowpass',
@@ -14,7 +17,7 @@ angular
             .then(function(access) {
                 if('function' === typeof access.inputs) {
                     // deprecated
-                    // $scope.devices = access.inputs();
+                    $scope.devices = access.inputs();
                     console.error('Update your Chrome version!');
                 } else {
                     if(access.inputs && access.inputs.size > 0) {
@@ -39,6 +42,7 @@ angular
         $scope.$watch('activeDevice', DSP.plug);
         $scope.$watch('synth.oscType', DSP.setOscType);
         $scope.$watch('synth.filterOn', DSP.enableFilter);
+        $scope.$watch('synth.filterType', DSP.setFilterType);
     }]);
 
 angular

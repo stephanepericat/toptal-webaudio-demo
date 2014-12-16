@@ -40,7 +40,9 @@ angular
         }
 
         Oscillator.prototype.setOscType = function(type) {
-            self.osc.type = type || 'sine';
+            if(type) {
+                self.osc.type = type
+            }
         }
 
         Oscillator.prototype.setFrequency = function(freq, time) {
@@ -132,7 +134,7 @@ angular
 
         function _createFilters() {
             self.filter1 = new Filter(self.ctx);
-            self.filter1.setFilterType('highpass');
+            // self.filter1.setFilterType('highpass');
             self.filter1.setFilterFrequency(5000);
             self.filter1.setFilterResonance(25);
         }
@@ -204,13 +206,18 @@ angular
             noteOff: _noteOff,
             detune: _detune,
             osc: {
-                setType: function(type) {
-                    if(type && self && self.osc1) {
-                        self.osc1.setOscType(type);
+                setType: function(t) {
+                    if(self.osc1) {
+                        self.osc1.setOscType(t);
                     }
                 }
             },
             filter: {
+                setType: function(t) {
+                    if(self.filter1) {
+                        self.filter1.setFilterType(t);
+                    }
+                },
                 connect: _connectFilter,
                 disconnect: _disconnectFilter
             }
@@ -263,6 +270,7 @@ angular
         return {
             plug: _plug,
             setOscType: Engine.osc.setType,
+            setFilterType: Engine.filter.setType,
             enableFilter: function(enable) {
                 if(enable !== undefined) {
                     if(enable) {
