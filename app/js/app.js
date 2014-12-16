@@ -3,6 +3,12 @@ angular
     .controller('SynthCtrl', ['$scope', 'Devices', 'DSP', function($scope, devices, DSP) {
         $scope.devices = [];
 
+        $scope.synth = {
+            oscType: 'sine',
+            filterType: 'lowpass',
+            filterOn: true
+        };
+
         devices
             .connect()
             .then(function(access) {

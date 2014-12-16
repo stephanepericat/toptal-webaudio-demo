@@ -61,7 +61,45 @@ angular
 
         return Oscillator;
     })
-    .factory('AudioEngine', ['OSC', 'AMP', '$window', function(Oscillator, Amp, $window) {
+    .service('FTR', function() {
+        var self;
+
+        function Filter(ctx) {
+            self = this;
+
+            self.filter = ctx.createBiquadFilter();
+            self.filter.gain.value = 40;
+
+            console.dir(self.filter);
+
+            return self;
+        }
+
+        Filter.prototype.setFilterType = function(type) {
+            if(type) {
+                self.filter.type = type;
+            }
+        }
+
+        Filter.prototype.setFilterFrequency = function(freq) {
+            if(freq) {
+                self.filter.frequency.value = freq;
+            }
+        }
+
+        Filter.prototype.setFilterResonance = function(res) {
+            if(res) {
+                self.filter.Q.value = res;
+            }
+        }
+
+        Filter.prototype.connect = function(i) {
+            self.filter.connect(i);
+        }
+
+        return Filter;
+    })
+    .factory('AudioEngine', ['OSC', 'AMP', 'FTR', '$window', function(Oscillator, Amp, Filter, $window) {
         var self = this;
 
         self.activeNotes = [];
@@ -86,10 +124,19 @@ angular
             self.osc1.setOscType('sine');
         }
 
+        function _createFilters() {
+            self.filter1 = new Filter(self.ctx);
+            self.filter1.setFilterType('highpass');
+            self.filter1.setFilterFrequency(5000);
+            self.filter1.setFilterResonance(25);
+        }
+
         function _wire() {
             self.osc1.connect(self.amp.gain);
-            self.amp.connect(self.ctx.destination);
+            self.amp.connect(self.filter1.filter);
+
             self.amp.setVolume(0.0, 0); //mute the sound
+            self.filter1.connect(self.ctx.destination);
             self.osc1.start(0); // start osc1
         }
 
@@ -128,6 +175,7 @@ angular
                 _createContext();
                 _createAmp();
                 _createOscillators();
+                _createFilters();
                 _wire();
             },
             noteOn: _noteOn,
