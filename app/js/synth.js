@@ -48,6 +48,8 @@ angular
             plug: _plug,
             setOscType: Engine.osc.setType,
             setFilterType: Engine.filter.setType,
+            setFilterFrequency: Engine.filter.setFrequency,
+            setFilterResonance: Engine.filter.setResonance,
             enableFilter: function(enable) {
                 if(enable !== undefined) {
                     if(enable) {

@@ -4,12 +4,14 @@ angular
         $scope.devices = [];
 
         $scope.oscTypes = ['sine', 'square', 'triangle', 'sawtooth'];
-        $scope.filterTypes = ['lowpass', 'highpass', 'bandpass'];
+        $scope.filterTypes = ['lowpass', 'highpass'];
 
         $scope.synth = {
             oscType: 'sine',
             filterType: 'lowpass',
-            filterOn: false
+            filterOn: false,
+            filterFreq: 50,
+            filterRes: 0
         };
 
         devices
@@ -43,6 +45,8 @@ angular
         $scope.$watch('synth.oscType', DSP.setOscType);
         $scope.$watch('synth.filterOn', DSP.enableFilter);
         $scope.$watch('synth.filterType', DSP.setFilterType);
+        $scope.$watch('synth.filterFreq', DSP.setFilterFrequency);
+        $scope.$watch('synth.filterRes', DSP.setFilterResonance);
     }]);
 
 angular

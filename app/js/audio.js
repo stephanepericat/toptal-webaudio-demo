@@ -218,6 +218,16 @@ angular
                         self.filter1.setFilterType(t);
                     }
                 },
+                setFrequency: function(f) {
+                    if(self.filter1) {
+                        self.filter1.setFilterFrequency(f);
+                    }
+                },
+                setResonance: function(r) {
+                    if(self.filter1) {
+                        self.filter1.setFilterResonance(r);
+                    }
+                },
                 connect: _connectFilter,
                 disconnect: _disconnectFilter
             }
