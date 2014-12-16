@@ -23,6 +23,10 @@ angular
             self.gain.gain.cancelScheduledValues(0);
         }
 
+        Gain.prototype.disconnect = function() {
+            self.gain.disconnect(0);
+        }
+
         return Gain;
     })
     .service('OSC', function() {
@@ -95,6 +99,10 @@ angular
             self.filter.connect(i);
         }
 
+        Filter.prototype.disconnect = function() {
+            self.filter.disconnect(0);
+        }
+
         return Filter;
     })
     .factory('AudioEngine', ['OSC', 'AMP', 'FTR', '$window', function(Oscillator, Amp, Filter, $window) {
@@ -131,11 +139,22 @@ angular
 
         function _wire() {
             self.osc1.connect(self.amp.gain);
-            self.amp.connect(self.filter1.filter);
+            self.amp.connect(self.ctx.destination);
             self.amp.setVolume(0.0, 0); //mute the sound
-            self.filter1.connect(self.ctx.destination);
 
             self.osc1.start(0); // start osc1
+        }
+
+        function _connectFilter() {
+            self.amp.disconnect();
+            self.amp.connect(self.filter1.filter);
+            self.filter1.connect(self.ctx.destination);
+        }
+
+        function _disconnectFilter() {
+            self.filter1.disconnect();
+            self.amp.disconnect();
+            self.amp.connect(self.ctx.destination);
         }
 
         function _mtof(note) {
@@ -190,6 +209,10 @@ angular
                         self.osc1.setOscType(type);
                     }
                 }
+            },
+            filter: {
+                connect: _connectFilter,
+                disconnect: _disconnectFilter
             }
         };
     }])
@@ -239,6 +262,15 @@ angular
 
         return {
             plug: _plug,
-            setOscType: Engine.osc.setType
+            setOscType: Engine.osc.setType,
+            enableFilter: function(enable) {
+                if(enable !== undefined) {
+                    if(enable) {
+                        Engine.filter.connect();
+                    } else {
+                        Engine.filter.disconnect();
+                    }
+                }
+            }
         };
     }]);

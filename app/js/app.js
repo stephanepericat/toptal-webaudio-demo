@@ -6,7 +6,7 @@ angular
         $scope.synth = {
             oscType: 'sine',
             filterType: 'lowpass',
-            filterOn: true
+            filterOn: false
         };
 
         devices
@@ -38,6 +38,7 @@ angular
         // watchers
         $scope.$watch('activeDevice', DSP.plug);
         $scope.$watch('synth.oscType', DSP.setOscType);
+        $scope.$watch('synth.filterOn', DSP.enableFilter);
     }]);
 
 angular
