@@ -68,9 +68,7 @@ angular
             self = this;
 
             self.filter = ctx.createBiquadFilter();
-            self.filter.gain.value = 40;
-
-            console.dir(self.filter);
+            // self.filter.gain.value = -40; // ???
 
             return self;
         }
@@ -134,9 +132,9 @@ angular
         function _wire() {
             self.osc1.connect(self.amp.gain);
             self.amp.connect(self.filter1.filter);
-
             self.amp.setVolume(0.0, 0); //mute the sound
             self.filter1.connect(self.ctx.destination);
+
             self.osc1.start(0); // start osc1
         }
 
@@ -170,6 +168,11 @@ angular
             }
         }
 
+        function _detune(d) {
+            // range: 0 to 127
+            console.log('detune called', d);
+        }
+
         return {
             init: function() {
                 _createContext();
@@ -180,6 +183,7 @@ angular
             },
             noteOn: _noteOn,
             noteOff: _noteOff,
+            detune: _detune,
             osc: {
                 setType: function(type) {
                     if(type && self && self.osc1) {
@@ -215,9 +219,9 @@ angular
         function _onmidimessage(e) {
             /**
             * e.data is an array
-            * e.data[0] = on (144) / off (128)
+            * e.data[0] = on (144) / off (128) / detune (224)
             * e.data[1] = midi note
-            * e.data[2] = velocity
+            * e.data[2] = velocity || detune
             */
             switch(e.data[0]) {
                 case 144:
@@ -226,7 +230,11 @@ angular
                 case 128:
                     Engine.noteOff(e.data[1]);
                 break;
+                case 224:
+                    Engine.detune(e.data[2]);
+                break;
             }
+
         };
 
         return {
