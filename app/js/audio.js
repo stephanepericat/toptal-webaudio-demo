@@ -139,24 +139,38 @@ angular
             self.filter1.setFilterResonance(25);
         }
 
-        function _wire() {
+        function _wire(Analyser) {
             self.osc1.connect(self.amp.gain);
-            self.amp.connect(self.ctx.destination);
-            self.amp.setVolume(0.0, 0); //mute the sound
 
+            if(Analyser) {
+                self.analyser = Analyser;
+                self.analyser.connect(self.ctx, self.amp);
+            } else {
+                self.amp.connect(self.ctx.destination);
+            }
+
+            self.amp.setVolume(0.0, 0); //mute the sound
             self.osc1.start(0); // start osc1
         }
 
         function _connectFilter() {
             self.amp.disconnect();
             self.amp.connect(self.filter1.filter);
-            self.filter1.connect(self.ctx.destination);
+            if(self.analyser) {
+                self.analyser.connect(self.ctx, self.filter1);
+            } else {
+                self.filter1.connect(self.ctx.destination);
+            }
         }
 
         function _disconnectFilter() {
             self.filter1.disconnect();
             self.amp.disconnect();
-            self.amp.connect(self.ctx.destination);
+            if(self.analyser) {
+                self.analyser.connect(self.ctx, self.amp);
+            } else {
+                self.amp.connect(self.ctx.destination);
+            }
         }
 
         function _mtof(note) {
@@ -189,10 +203,10 @@ angular
             }
         }
 
-        function _detune(d) {
-            // range: 0 to 127
-            console.log('detune called', d);
-        }
+        // function _detune(d) {
+        //     // range: 0 to 127
+        //     console.log('detune called', d);
+        // }
 
         return {
             init: function() {
@@ -200,11 +214,11 @@ angular
                 _createAmp();
                 _createOscillators();
                 _createFilters();
-                _wire();
             },
+            wire: _wire,
             noteOn: _noteOn,
             noteOff: _noteOff,
-            detune: _detune,
+            // detune: _detune,
             osc: {
                 setType: function(t) {
                     if(self.osc1) {

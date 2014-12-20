@@ -3,6 +3,13 @@
     <head>
         <title>Toptal webaudio demo</title>
         <link href="/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+        <style type="text/css">
+            #analyser {
+                height: 200px;
+                width: 100%;
+                /*border: 1px solid #ccc;*/
+            }
+        </style>
     </head>
     <body>
         <div class="synth container" ng-controller="WebSynthCtrl">
@@ -52,12 +59,19 @@
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6">
                 <!-- frequency analyser goes here -->
+                <div class="panel panel-default">
+                    <div class="panel-heading">Analyser</div>
+                    <div class="panel-body">
+                        <canvas id="analyser"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
 
         <script src="/vendors/jquery/dist/jquery.min.js"></script>
         <script src="/vendors/angular/angular.min.js"></script>
         <script src="/js/midi.js"></script>
+        <script src="/js/analyser.js"></script>
         <script src="/js/audio.js"></script>
         <script src="/js/synth.js"></script>
         <script src="/js/app.js"></script>

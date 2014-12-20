@@ -1,7 +1,8 @@
 angular
-    .module('WebSynth', ['WebAudio', 'WebMIDI', 'Synth'])
+    .module('WebSynth', ['WebMIDI', 'Synth'])
     .controller('WebSynthCtrl', ['$scope', 'Devices', 'DSP', function($scope, devices, DSP) {
         $scope.devices = [];
+        $scope.analyser = null;
 
         $scope.oscTypes = ['sine', 'square', 'triangle', 'sawtooth'];
         $scope.filterTypes = ['lowpass', 'highpass'];
@@ -30,6 +31,9 @@ angular
                         for (input = inputs.next(); input && !input.done; input = inputs.next()) {
                             $scope.devices.push(input.value);
                         }
+
+                        // create the frequency analyser
+                        $scope.analyser = DSP.createAnalyser('#analyser');
                     } else {
                         console.error('No devices detected!');
                     }

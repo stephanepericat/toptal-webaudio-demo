@@ -1,8 +1,9 @@
 angular
-    .module('Synth', ['WebAudio'])
-    .factory('DSP', ['AudioEngine', function(Engine) {
+    .module('Synth', ['WebAudio', 'WebAnalyser'])
+    .factory('DSP', ['AudioEngine', 'Analyser', function(Engine, Analyser) {
         var self = this;
         self.device = null;
+        self.analyser = null;
 
         Engine.init();
 
@@ -23,6 +24,14 @@ angular
             }
         }
 
+        function _createAnalyser(canvas) {
+            self.analyser = new Analyser(canvas);
+            // self.analyser.wire();
+            Engine.wire(self.analyser);
+
+            return self.analyser;
+        }
+
         function _onmidimessage(e) {
             /**
             * e.data is an array
@@ -37,27 +46,30 @@ angular
                 case 128:
                     Engine.noteOff(e.data[1]);
                 break;
-                case 224:
-                    Engine.detune(e.data[2]);
-                break;
+                // case 224:
+                //     Engine.detune(e.data[2]);
+                // break;
             }
 
-        };
+        }
+
+        function _enableFilter(enable) {
+            if(enable !== undefined) {
+                if(enable) {
+                    Engine.filter.connect();
+                } else {
+                    Engine.filter.disconnect();
+                }
+            }
+        }
 
         return {
             plug: _plug,
+            createAnalyser: _createAnalyser,
             setOscType: Engine.osc.setType,
             setFilterType: Engine.filter.setType,
             setFilterFrequency: Engine.filter.setFrequency,
             setFilterResonance: Engine.filter.setResonance,
-            enableFilter: function(enable) {
-                if(enable !== undefined) {
-                    if(enable) {
-                        Engine.filter.connect();
-                    } else {
-                        Engine.filter.disconnect();
-                    }
-                }
-            }
+            enableFilter: _enableFilter
         };
     }]);
