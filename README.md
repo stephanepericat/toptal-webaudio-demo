@@ -19,3 +19,8 @@ Go to [http://localhost:3000/](http://localhost:3000/)
 Any MIDI device should be picked up by the demo.
 
 Remember to connect your MIDI device __before__ starting your browser.
+
+
+##Demo##
+
+Try it out [here](http://webmididemo.herokuapp.com/)!
