@@ -43,7 +43,7 @@
                 <p>You should also install the following libraries to help you build up your aplication: <kbd>Angular.js</kbd>, <kbd>Boostrap</kbd> and <kbd>jQuery</kbd>. Probably the easiest way to do so is via Bower.</p>
             </section>
             <section class="WebMidi-module">
-                <h2>The WebMidi module</h2>
+                <h2>The WebMidi module: connecting to our MIDI devices</h2>
                 <p>Let's start by connecting our MIDI devices to our app. To do so, we will create a simple factory returning a single method. To connect to our MIDI devices via the Web MIDI API, we need to call the <kbd>navigator.requestMIDIAccess()</kbd> method:</p>
                 <pre>
 angular
@@ -103,6 +103,10 @@ angular
 &lt;/select&gt;
                 </pre>
                 <p>We bound this select box to a $scope variable called <kbd>activeDevice</kbd>. We will use this later to connect this active device to the synth.</p>
+            </section>
+            <section class="WebAudio-module">
+                <h2>The WebAudio module: Making noise</h2>
+                <p>The WebAudio API allows us to not only play sound files, but also generate sounds by recreating the essential components of synthesizers such as oscillators, filters and gain nodes <a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext#Methods" target="_blank">amongst others</a>.</p>
             </section>
         </div>
     </body>
