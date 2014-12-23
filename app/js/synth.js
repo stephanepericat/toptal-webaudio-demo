@@ -26,7 +26,6 @@ angular
 
         function _createAnalyser(canvas) {
             self.analyser = new Analyser(canvas);
-            // self.analyser.wire();
             Engine.wire(self.analyser);
 
             return self.analyser;

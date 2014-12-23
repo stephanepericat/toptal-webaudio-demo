@@ -10,7 +10,6 @@ angular
             self.view = self.canvas[0].getContext('2d') || null;
             self.javascriptNode = null;
             self.analyser = null;
-            // self.sourceNode = null;
 
             return self;
         }
@@ -19,6 +18,7 @@ angular
             for (var i = 0; i < (array.length); i++) {
                 var v = array[i],
                     h = self.canvas.height();
+
                 self.view.fillRect(i * 2, h - (v - (h / 4)), 1, v + (h / 4));
             }
         }

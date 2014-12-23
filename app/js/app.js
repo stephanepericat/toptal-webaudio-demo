@@ -13,8 +13,8 @@ angular
             filterOn: false,
             filterFreq: 50,
             filterRes: 0,
-            attack: 0,
-            release: 0
+            attack: 0.05,
+            release: 0.05
         };
 
         devices
@@ -55,8 +55,6 @@ angular
         $scope.$watch('synth.filterRes', DSP.setFilterResonance);
         $scope.$watch('synth.attack', DSP.setAttack);
         $scope.$watch('synth.release', DSP.setRelease);
-        // $scope.$watch('synth.attack', function(n) {console.log('attack', n, DSP.setAttack)});
-        // $scope.$watch('synth.release', function(n) {console.log('release', n, DSP.setRelease)});
     }]);
 
 angular

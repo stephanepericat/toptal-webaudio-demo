@@ -135,14 +135,12 @@ angular
         }
 
         function _setAttack(a) {
-            console.log(a);
             if(a) {
                 self.settings.attack = a / 1000;
             }
         }
 
         function _setRelease(r) {
-            console.log(r);
             if(r) {
                 self.settings.release = r / 1000;
             }
@@ -150,9 +148,8 @@ angular
 
         function _createFilters() {
             self.filter1 = new Filter(self.ctx);
-            // self.filter1.setFilterType('highpass');
-            self.filter1.setFilterFrequency(5000);
-            self.filter1.setFilterResonance(25);
+            self.filter1.setFilterFrequency(50);
+            self.filter1.setFilterResonance(0);
         }
 
         function _wire(Analyser) {
@@ -221,10 +218,6 @@ angular
                 self.currentFreq = null;
                 self.amp.setVolume(0.0, self.settings.release);
             }
-            // else {
-            //     self.osc1.cancel();
-            //     self.osc1.setFrequency(_mtof(self.activeNotes[self.activeNotes.length - 1]), self.settings.portamento);
-            // }
         }
 
         function _detune(d) {
