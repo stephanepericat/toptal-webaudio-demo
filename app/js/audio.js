@@ -116,6 +116,8 @@ angular
             portamento: 0.05
         };
 
+        self.detuneAmount = 0;
+
         self.currentFreq = null;
 
         function _createContext() {
@@ -198,7 +200,7 @@ angular
 
             self.osc1.cancel();
             self.currentFreq = _mtof(note);
-            self.osc1.setFrequency(self.currentFreq, self.settings.portamento);
+            self.osc1.setFrequency(self.currentFreq + self.detuneAmount, self.settings.portamento);
 
             self.amp.cancel();
 
@@ -216,6 +218,11 @@ angular
                 self.amp.cancel();
                 self.currentFreq = null;
                 self.amp.setVolume(0.0, self.settings.release);
+            } else {
+                // in case another note is pressed, we set that one as the new active note
+                self.osc1.cancel();
+                self.currentFreq = _mtof(self.activeNotes[self.activeNotes.length - 1]);
+                self.osc1.setFrequency(self.currentFreq + self.detuneAmount, self.settings.portamento);
             }
         }
 
@@ -224,9 +231,11 @@ angular
                 //64 = no detune
                 if(64 === d) {
                     self.osc1.setFrequency(self.currentFreq, self.settings.portamento);
+                    self.detuneAmount = 0;
                 } else {
                     var detuneFreq = Math.pow(2, 1 / 12) * (d - 64);
                     self.osc1.setFrequency(self.currentFreq + detuneFreq, self.settings.portamento);
+                    self.detuneAmount = detuneFreq;
                 }
             }
         }
