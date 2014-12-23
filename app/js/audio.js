@@ -74,7 +74,6 @@ angular
             self = this;
 
             self.filter = ctx.createBiquadFilter();
-            // self.filter.gain.value = -40; // ???
 
             return self;
         }
