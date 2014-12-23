@@ -17,8 +17,9 @@ angular
 
         function drawSpectrum(array) {
             for (var i = 0; i < (array.length); i++) {
-                var value = array[i];
-                self.view.fillRect(i * 4, self.canvas.height() - value, 2, value);
+                var v = array[i],
+                    h = self.canvas.height();
+                self.view.fillRect(i * 2, h - (v - (h / 4)), 1, v + (h / 4));
             }
         }
 
