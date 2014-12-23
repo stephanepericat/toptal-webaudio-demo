@@ -212,6 +212,7 @@ angular
         // function _detune(d) {
         //     // range: 0 to 127
         //     console.log('detune called', d);
+        //     Math.pow(2, 1/12) * 10
         // }
 
         return {
