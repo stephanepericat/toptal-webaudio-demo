@@ -41,7 +41,7 @@ angular
             self.analyser.connect(self.javascriptNode);
 
             // sourceNode.connect(context.destination);
-            var gradient = self.view.createLinearGradient(0, 0, 0, 300);
+            var gradient = self.view.createLinearGradient(0, 0, 0, 200);
             gradient.addColorStop(1, '#000000');
             gradient.addColorStop(0.75, '#ff0000');
             gradient.addColorStop(0.25, '#ffff00');
