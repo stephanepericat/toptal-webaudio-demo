@@ -177,6 +177,10 @@ angular
             return 440 * Math.pow(2, (note - 69) / 12);
         }
 
+        function _vtov (velocity) {
+            return (velocity / 127).toFixed(2);
+        }
+
         function _noteOn(note, velocity) {
             self.activeNotes.push(note);
 
@@ -184,7 +188,8 @@ angular
             self.osc1.setFrequency(_mtof(note), self.settings.portamento);
 
             self.amp.cancel();
-            self.amp.setVolume(1.0, self.settings.attack);
+
+            self.amp.setVolume(_vtov(velocity), self.settings.attack);
         }
 
         function _noteOff(note) {
@@ -197,10 +202,11 @@ angular
                 // shut off the envelope
                 self.amp.cancel();
                 self.amp.setVolume(0.0, self.settings.release);
-            } else {
-                self.osc1.cancel();
-                self.osc1.setFrequency(_mtof(self.activeNotes[self.activeNotes.length - 1]), self.settings.portamento);
             }
+            // else {
+            //     self.osc1.cancel();
+            //     self.osc1.setFrequency(_mtof(self.activeNotes[self.activeNotes.length - 1]), self.settings.portamento);
+            // }
         }
 
         // function _detune(d) {
