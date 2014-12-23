@@ -12,7 +12,7 @@
                     While the Web Audio API is increasinlgy gaining in popularity, especially amongst HTML5 game developers, the Web MIDI API is still little known amongst front-end developers. A big part of it probably has to do with its current lack of support; the Web MIDI API is currently only supported in Google Chrome, granted that you will enable a special flag for it. Browser manufacturers currently put little emphasis on this api, as it is planned to be part of ES7.<br/><br/>
                     Invented in the early 80's by several audio manufacturers, the objective was to create a simple, standard communication protocol for electronic music devices. Thirty years later, eventhough over the years other protocols such as OSC were developed, it is still the de-facto communication protocol for audio hardware manufacturers, and you will be hard-pressed to find a modern music producer that do not own at least one MIDI device in his studio.<br/><br/>
                     With the fast development and adoption of the Web Audio API, we can now start building browser-based applications that bridge the gap between the cloud and the physical world. Not only does the Web MIDI API allows us to build synthesizers and audio effects, but we can even start building browser-based DAW's (Digital Audio Workstation) similar in feature and performance to their current flash-based counterparts (Check out Audiotool, for example).<br/><br/>
-                    In this tutorial, I will guide you through the basics of the Web MIDI API, and we will build a simple monosynth that you will be able to play with your favorite MIDI device.
+                    In this tutorial, I will guide you through the basics of the Web MIDI API, and we will build a simple monosynth that you will be able to play with your favorite MIDI device. The full source code is available <a href="https://github.com/stephanepericat/toptal-webaudio-demo" target="_blank">here</a>, and you can test the <a href="http://webmididemo.herokuapp.com/" target="_blank">live demo</a> directly.
                 </p>
                 <h3>Pre-requisites</h3>
                 <p>You will need the following to follow this tutorial:</p>
@@ -26,8 +26,8 @@
                 <h2>Getting started</h2>
                 <p>We will moduralize our application from the ground up by separating it in 3 modules:</p>
                 <ul>
-                    <li><b>WebMidi:</b> handling the various MIDI devices connected to your computer</li>
-                    <li><b>Web Audio:</b> providing the audio source for our synth</li>
+                    <li><b>WebMIDI:</b> handling the various MIDI devices connected to your computer</li>
+                    <li><b>WebAudio:</b> providing the audio source for our synth</li>
                     <li><b>WebSynth:</b> connecting the web interface to the audio engine</li>
                 </ul>
                 <p>Finally, an App module will handle the user interaction with the web interface. Our application structure could look a bit like this:</p>
@@ -43,7 +43,7 @@
                 <p>You should also install the following libraries to help you build up your aplication: <kbd>Angular.js</kbd>, <kbd>Boostrap</kbd> and <kbd>jQuery</kbd>. Probably the easiest way to do so is via Bower.</p>
             </section>
             <section class="WebMidi-module">
-                <h2>The WebMidi module: connecting to our MIDI devices</h2>
+                <h2>The WebMidi module: connecting with the real world</h2>
                 <p>Let's start by connecting our MIDI devices to our app. To do so, we will create a simple factory returning a single method. To connect to our MIDI devices via the Web MIDI API, we need to call the <kbd>navigator.requestMIDIAccess()</kbd> method:</p>
                 <pre>
 angular
@@ -65,8 +65,8 @@ angular
                 <p>And that's pretty much it!<br/><br/>The requestMIDIAccess method returns a promise, so we can just return it directly and we will be handling the result of the promise in our app's controller:</p>
                 <pre>
 angular
-    .module('WebMidiDemo', ['WebMIDI'])
-    .controller('SynthCtrl', ['$scope', 'Devices', function($scope, devices) {
+    .module('DemoApp', ['WebMIDI'])
+    .controller('AppCtrl', ['$scope', 'Devices', function($scope, devices) {
         $scope.devices = [];
 
         devices
@@ -105,7 +105,7 @@ angular
                 <p>We bound this select box to a $scope variable called <kbd>activeDevice</kbd>. We will use this later to connect this active device to the synth.</p>
             </section>
             <section class="WebAudio-module">
-                <h2>The WebAudio module: Making noise</h2>
+                <h2>The WebAudio module: making noise</h2>
                 <p>The WebAudio API allows us to not only play sound files, but also generate sounds by recreating the essential components of synthesizers such as oscillators, filters and gain nodes <a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext#Methods" target="_blank">amongst others</a>.</p>
             </section>
         </div>
