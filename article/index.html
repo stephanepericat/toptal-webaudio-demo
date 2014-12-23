@@ -159,6 +159,20 @@ Oscillator.prototype.cancel = function() {
 
 return Oscillator;
                 </pre>
+                <h3>Create a multipass filter and a volume control</h3>
+                <p>We need two more components to complete our basic audio engine: a multipass filter, to give a bit of shape to our sound, and a gain node to control the volume of our sound and turn the volume on and off. To do so, we can proceed in the same way we did for the oscillator: create services returning a function with some wrapper methods. All we need to do is provide the AudioContext instance and call the appropriate method.</p>
+                <p>To create a filter:</p>
+                <pre>
+ctx.createBiquadFilter();
+                </pre>
+                <p>To create a gain node:</p>
+                <pre>
+ctx.createGain();
+                </pre>
+            </section>
+            <section class="WebSynth-module">
+                <h2>The WebSynth module: wiring things up</h2>
+                <p>Now we are almost ready to build our synth interface and connect our midi devices to our audio source. FIrst, we need to connect our audio engine together and get it ready to receive midi notes. To connect the audio engine, we simply create new instances of the components that we need, and then "connect" them together using the connect() method available for each components' instances. The connect() method takes one argument, which is simply the component you want to connect the current instance to.</p>
             </section>
         </div>
     </body>
