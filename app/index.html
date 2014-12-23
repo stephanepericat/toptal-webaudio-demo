@@ -44,12 +44,12 @@
                 <div class="form-group">
                     <!-- frequency -->
                     <label>filter frequency:</label>
-                    <input type="range" class="form-control" min="50" max="10000" ng-model="synth.filterFreq" />
+                    <input type="range" class="form-control" min="50" max="10000" ng-model="synth.filterFreq" ng-disabled="!synth.filterOn" />
                 </div>
                 <div class="form-group">
                     <!-- resonance -->
                     <label>filter resonance:</label>
-                    <input type="range" class="form-control" min="0" max="150" ng-model="synth.filterRes" />
+                    <input type="range" class="form-control" min="0" max="150" ng-model="synth.filterRes" ng-disabled="!synth.filterOn" />
                 </div>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6">
