@@ -134,6 +134,20 @@ angular
             self.osc1.setOscType('sine');
         }
 
+        function _setAttack(a) {
+            console.log(a);
+            if(a) {
+                self.settings.attack = a / 1000;
+            }
+        }
+
+        function _setRelease(r) {
+            console.log(r);
+            if(r) {
+                self.settings.release = r / 1000;
+            }
+        }
+
         function _createFilters() {
             self.filter1 = new Filter(self.ctx);
             // self.filter1.setFilterType('highpass');
@@ -236,6 +250,8 @@ angular
             noteOn: _noteOn,
             noteOff: _noteOff,
             detune: _detune,
+            setAttack: _setAttack,
+            setRelease: _setRelease,
             osc: {
                 setType: function(t) {
                     if(self.osc1) {

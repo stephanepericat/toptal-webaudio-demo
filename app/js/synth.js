@@ -68,6 +68,8 @@ angular
             createAnalyser: _createAnalyser,
             setOscType: Engine.osc.setType,
             setFilterType: Engine.filter.setType,
+            setAttack: Engine.setAttack,
+            setRelease: Engine.setRelease,
             setFilterFrequency: Engine.filter.setFrequency,
             setFilterResonance: Engine.filter.setResonance,
             enableFilter: _enableFilter
