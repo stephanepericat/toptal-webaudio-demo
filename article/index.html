@@ -24,6 +24,85 @@
             </section>
             <section class="getting-started">
                 <h2>Getting started</h2>
+                <p>We will moduralize our application from the ground up by separating it in 3 modules:</p>
+                <ul>
+                    <li><b>WebMidi:</b> handling the various MIDI devices connected to your computer</li>
+                    <li><b>Web Audio:</b> providing the audio source for our synth</li>
+                    <li><b>WebSynth:</b> connecting the web interface to the audio engine</li>
+                </ul>
+                <p>Finally, an App module will handle the user interaction with the web interface. Our application structure could look a bit like this:</p>
+                <pre>
+        |-app
+        |--js
+        |--- midi.js
+        |--- audio.js
+        |--- synth.js
+        |--- app.js
+        |- index.html
+                </pre>
+                <p>You should also install the following libraries to help you build up your aplication: <kbd>Angular.js</kbd>, <kbd>Boostrap</kbd> and <kbd>jQuery</kbd>. Probably the easiest way to do so is via Bower.</p>
+            </section>
+            <section class="WebMidi-module">
+                <h2>The WebMidi module</h2>
+                <p>Let's start by connecting our MIDI devices to our app. To do so, we will create a simple factory returning a single method. To connect to our MIDI devices via the Web MIDI API, we need to call the <kbd>navigator.requestMIDIAccess()</kbd> method:</p>
+                <pre>
+angular
+    .module('WebMIDI', [])
+    .factory('Devices', ['$window', function($window) {
+        function _connect() {
+            if($window.navigator && 'function' === typeof $window.navigator.requestMIDIAccess) {
+                $window.navigator.requestMIDIAccess();
+            } else {
+                throw 'No Web MIDI support';
+            }
+        }
+
+        return {
+            connect: _connect
+        };
+    }]);
+                </pre>
+                <p>And that's pretty much it!<br/><br/>The requestMIDIAccess method returns a promise, so we can just return it directly and we will be handling the result of the promise in our app's controller:</p>
+                <pre>
+angular
+    .module('WebMidiDemo', ['WebMIDI'])
+    .controller('SynthCtrl', ['$scope', 'Devices', function($scope, devices) {
+        $scope.devices = [];
+
+        devices
+            .connect()
+            .then(function(access) {
+                if('function' === typeof access.inputs) {
+                    // deprecated
+                    $scope.devices = access.inputs();
+                    console.error('Update your Chrome version!');
+                } else {
+                    if(access.inputs && access.inputs.size > 0) {
+                        var inputs = access.inputs.values(),
+                            input = null;
+
+                        // iterate through the devices
+                        for (input = inputs.next(); input && !input.done; input = inputs.next()) {
+                            $scope.devices.push(input.value);
+                        }
+                    } else {
+                        console.error('No devices detected!');
+                    }
+
+                }
+            })
+            .catch(function(e) {
+                console.error(e);
+            });
+    }]);
+                </pre>
+                <p>As mentionned, the requestMIDIAccess method returns a promise, passing an <i>access</i> Object to the then() method, with two properties: <kbd>inputs</kbd> and <kbd>outputs</kbd>.<br/><br/>In earlier versions of Chrome, these two properties were methods allowing you to retrieve an array of input and output devices directly. In the latest updates however, these properties are now objects. This makes quite a difference, since we now need to call the values() method on either the inputs or outputs object to retrieve the corresponding list of devices. This method acts as a generator function, and returns an iterator. Again, this API is meant to be part of ES7; therefore, implementing a generator-like behavior made a lot of sense, eventhough it is not as straight-forward as the original implementation.<br/>Finally, we can retrieve the amount of devices via the size property of the iterator object, and if there is at least one device, we simply iterate over the result by calling the next() method of the iterator object, and pushing each device to an array defined on the $scope. On the front-end, we can implement a simple select box which will list all the available input devices and let us choose which device we want to use as active device to control the web synth:</p>
+                <pre>
+&lt;select ng-model="activeDevice" class="form-control" ng-options="device.manufacturer + ' ' + device.name for device in devices"&gt;
+    &lt;option value="" disabled>Choose a MIDI device...&lt;/option&gt;
+&lt;/select&gt;
+                </pre>
+                <p>We bound this select box to a $scope variable called <kbd>activeDevice</kbd>. We will use this later to connect this active device to the synth.</p>
             </section>
         </div>
     </body>
