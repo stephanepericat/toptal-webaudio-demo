@@ -46,9 +46,9 @@ angular
                 case 128:
                     Engine.noteOff(e.data[1]);
                 break;
-                // case 224:
-                //     Engine.detune(e.data[2]);
-                // break;
+                case 224:
+                    Engine.detune(e.data[2]);
+                break;
             }
 
         }

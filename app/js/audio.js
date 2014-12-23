@@ -117,6 +117,8 @@ angular
             portamento: 0.05
         };
 
+        self.currentFreq = null;
+
         function _createContext() {
             self.ctx = new $window.AudioContext();
         }
@@ -185,7 +187,8 @@ angular
             self.activeNotes.push(note);
 
             self.osc1.cancel();
-            self.osc1.setFrequency(_mtof(note), self.settings.portamento);
+            self.currentFreq = _mtof(note);
+            self.osc1.setFrequency(self.currentFreq, self.settings.portamento);
 
             self.amp.cancel();
 
@@ -201,6 +204,7 @@ angular
             if (self.activeNotes.length === 0) {
                 // shut off the envelope
                 self.amp.cancel();
+                self.currentFreq = null;
                 self.amp.setVolume(0.0, self.settings.release);
             }
             // else {
@@ -209,11 +213,17 @@ angular
             // }
         }
 
-        // function _detune(d) {
-        //     // range: 0 to 127
-        //     console.log('detune called', d);
-        //     Math.pow(2, 1/12) * 10
-        // }
+        function _detune(d) {
+            if(self.currentFreq) {
+                //64 = no detune
+                if(64 === d) {
+                    self.osc1.setFrequency(self.currentFreq, self.settings.portamento);
+                } else {
+                    var detuneFreq = Math.pow(2, 1 / 12) * (d - 64);
+                    self.osc1.setFrequency(self.currentFreq + detuneFreq, self.settings.portamento);
+                }
+            }
+        }
 
         return {
             init: function() {
@@ -225,7 +235,7 @@ angular
             wire: _wire,
             noteOn: _noteOn,
             noteOff: _noteOff,
-            // detune: _detune,
+            detune: _detune,
             osc: {
                 setType: function(t) {
                     if(self.osc1) {
