@@ -107,6 +107,58 @@ angular
             <section class="WebAudio-module">
                 <h2>The WebAudio module: making noise</h2>
                 <p>The WebAudio API allows us to not only play sound files, but also generate sounds by recreating the essential components of synthesizers such as oscillators, filters and gain nodes <a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioContext#Methods" target="_blank">amongst others</a>.</p>
+                <h3>Create an oscillator</h3>
+                <p>The role of oscillators is to output a wave form. There are various types of wave forms, amongst which four are supported in the WebAudio API: <kbd>sine</kbd>, <kbd>square</kbd>, <kbd>triangle</kbd> and <kbd>sawtooth</kbd>. Wave forms are said to "oscillate" at a certain frequency. A certain range of frequencies are audible by human beings; they are known as sounds. Alternatively, when they are oscillating at low frequencies, oscillators can also help us build LFO's ("low frequency oscillator") so we can modulate our sounds (but this is out of the scope of this tutorial).<br/><br/>The first thing we need to do to create some sounds is to instantiate a new AudioContext:</p>
+                <pre>
+function _createContext() {
+    self.ctx = new $window.AudioContext();
+}
+                </pre>
+                <p>From there, we can instantiate any of the components made available by the WebAudio API. Since we might create multiple instances of each components, it makes sense to create services to be able to create new, unique instances of the components we need. Let's start by creating the service to generate a new oscillator:</p>
+                <pre>
+angular
+    .module('WebAudio', [])
+    .service('OSC', function() {
+        var self;
+
+        function Oscillator(ctx) {
+            self = this;
+            self.osc = ctx.createOscillator();
+
+            return self;
+        }
+    });
+                </pre>
+                <p>We can now instantiate new oscillators at our will, passing as unique argument the AudioContext instance we created earlier. Now, we can build some wrapper methods for syntaxic sugar, and return the Oscillator function:</p>
+                <pre>
+Oscillator.prototype.setOscType = function(type) {
+    if(type) {
+        self.osc.type = type
+    }
+}
+
+Oscillator.prototype.setFrequency = function(freq, time) {
+    self.osc.frequency.setTargetAtTime(freq, 0, time);
+};
+
+Oscillator.prototype.start = function(pos) {
+    self.osc.start(pos);
+}
+
+Oscillator.prototype.stop = function(pos) {
+    self.osc.stop(pos);
+}
+
+Oscillator.prototype.connect = function(i) {
+    self.osc.connect(i);
+}
+
+Oscillator.prototype.cancel = function() {
+    self.osc.frequency.cancelScheduledValues(0);
+}
+
+return Oscillator;
+                </pre>
             </section>
         </div>
     </body>
