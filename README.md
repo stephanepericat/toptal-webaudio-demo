@@ -3,9 +3,9 @@ toptal-webaudio-demo
 
 Demo files supporting the Toptal blog article about webaudio
 
-##Compatibility##
-
-Google Chrome 39+ with #enable-web-midi flag activated.
+##Prerequisites##
+ - Google Chrome 39 or above with #enable-web-midi flag activated
+ - Some MIDI controller connected to your computer
 
 ##How To Use##
 
