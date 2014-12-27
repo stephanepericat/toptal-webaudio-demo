@@ -377,7 +377,35 @@ self.amp.setVolume(_vtov(velocity), self.settings.attack);
                 </pre>
                 <p>And that's it! now when we play our synth, we will notice the volumes varies based on how hard we hit the keys on our keyboard.</p>
                 <h3>Enabling the detune wheel on your MIDI keyboard</h3>
-                <p></p>
+                <p>Most MIDI keyboards feature a detune wheel; this allows you to slightly alter the frequency of the note currently being played, creating an interesting effect known as 'detune'. This is fairly easy to implement, since the detune wheel also fires a MidiMessage event with its own event code (224), which we can listen to and act upon by recalculating the frequency value and update the oscillator.</p>
+                <p>We first need to catch the event in our synth. To do so, we add an extra case on the switch we creatd in the _onmidimessage() callback:</p>
+                <pre>
+case 224:
+    // the detune value is the third argument of the MidiEvent.data array
+    Engine.detune(e.data[2]);
+break;
+                </pre>
+                <p>Then, we define the detune() method on the audio engine:</p>
+                <pre>
+function _detune(d) {
+    if(self.currentFreq) {
+        //64 = no detune
+        if(64 === d) {
+            self.osc1.setFrequency(self.currentFreq, self.settings.portamento);
+            self.detuneAmount = 0;
+        } else {
+            var detuneFreq = Math.pow(2, 1 / 12) * (d - 64);
+            self.osc1.setFrequency(self.currentFreq + detuneFreq, self.settings.portamento);
+            self.detuneAmount = detuneFreq;
+        }
+    }
+}
+                </pre>
+                <p>The default detune value is 64, which means there is not detune applied, so in this case we simply pass the current frequency to the oscillator.</p>
+                </p>Finally, we also need to update the _noteOff() method, to take the detune in consideration in case another note is queued:</p>
+                <pre>
+self.osc1.setFrequency(self.currentFreq + self.detuneAmount, self.settings.portamento);
+                </pre>
             </section>
         </div>
     </body>
