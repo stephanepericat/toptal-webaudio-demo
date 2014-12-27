@@ -173,6 +173,103 @@ ctx.createGain();
             <section class="WebSynth-module">
                 <h2>The WebSynth module: wiring things up</h2>
                 <p>Now we are almost ready to build our synth interface and connect our midi devices to our audio source. FIrst, we need to connect our audio engine together and get it ready to receive midi notes. To connect the audio engine, we simply create new instances of the components that we need, and then "connect" them together using the connect() method available for each components' instances. The connect() method takes one argument, which is simply the component you want to connect the current instance to.</p>
+                <pre>
+self.osc1 = new Oscillator(self.ctx);
+self.osc1.setOscType('sine');
+self.amp = new Amp(self.ctx);
+
+self.osc1.connect(self.amp.gain);
+
+self.amp.connect(self.ctx.destination);
+self.amp.setVolume(0.0, 0); //mute the sound
+
+self.osc1.start(0); // start osc1
+                </pre>
+                <p>We will also need some logic to enable and disable the filter. The filter will be connected between the volume and the destination:</p>
+                <pre>
+self.filter1 = new Filter(self.ctx);
+self.filter1.setFilterFrequency(50);
+self.filter1.setFilterResonance(0);
+
+function _connectFilter() {
+    self.amp.disconnect();
+    self.amp.connect(self.filter1.filter);
+    self.filter1.connect(self.ctx.destination);
+}
+
+function _disconnectFilter() {
+    self.filter1.disconnect();
+    self.amp.disconnect();
+    self.amp.connect(self.ctx.destination);
+}
+                </pre>
+                <p>We just built the internal wiring of our audio engine. You can play around a bit and try different combinations of wiring, but remember to turn down the volume to not become deaf| Now we can hook up the MIDI interface to our application and send MIDI messages to the audio engine. We will setup a watcher on the device selectbox to virtually "plug" it to our synth. We will then listen to MIDI messages incoming from the device, and pass the information to the audio engine:</p>
+                <pre>
+// in the app's controller
+$scope.$watch('activeDevice', DSP.plug);
+
+// in the synth module
+function _onmidimessage(e) {
+    /**
+    * e.data is an array
+    * e.data[0] = on (144) / off (128) / detune (224)
+    * e.data[1] = midi note
+    * e.data[2] = velocity || detune
+    */
+    switch(e.data[0]) {
+        case 144:
+        Engine.noteOn(e.data[1], e.data[2]);
+        break;
+        case 128:
+        Engine.noteOff(e.data[1]);
+        break;
+    }
+
+}
+
+self.device = device;
+self.device.onmidimessage = _onmidimessage;
+                </pre>
+                <p>Here, we are listening to MIDI events from the device, analysing the data from the <a href="http://www.w3.org/TR/2012/WD-webmidi-20121213/#midievent-interface" target="_blank">MidiEvent Object</a>, and passing it to the appropriate method, either noteOn() or noteOff(), based on the event code (144 for noteOn, 128 for noteOff). We can now add the logic in the respective methods in the audio module to actually generate a sound:</p>
+                <pre>
+function _noteOn(note, velocity) {
+    self.activeNotes.push(note);
+
+    self.osc1.cancel();
+    self.currentFreq = _mtof(note);
+    self.osc1.setFrequency(self.currentFreq, self.settings.portamento);
+
+    self.amp.cancel();
+
+    self.amp.setVolume(1.0, self.settings.attack);
+}
+
+function _noteOff(note) {
+    var position = self.activeNotes.indexOf(note);
+    if (position !== -1) {
+        self.activeNotes.splice(position, 1);
+    }
+
+    if (self.activeNotes.length === 0) {
+        // shut off the envelope
+        self.amp.cancel();
+        self.currentFreq = null;
+        self.amp.setVolume(0.0, self.settings.release);
+    } else {
+        // in case another note is pressed, we set that one as the new active note
+        self.osc1.cancel();
+        self.currentFreq = _mtof(self.activeNotes[self.activeNotes.length - 1]);
+        self.osc1.setFrequency(self.currentFreq, self.settings.portamento);
+    }
+}
+                </pre>
+                <p>A few things are happening here. In the noteOn() method, we first push the current note to an array of notes. Eventhough we are building a monosynth (meaning we can only play one note at a time), we can still have several fingers at once on the keyboard so we need to queue all theses notes so that when we release one note, the next one is played. We then need to stop the oscillator to assign the new frequrency, which we convert from a MIDI note (scale from 0 to 127) to actual frequency value with a bit of math:</p>
+                <pre>
+function _mtof(note) {
+    return 440 * Math.pow(2, (note - 69) / 12);
+}
+                </pre>
+                <p>In the noteOff() method, we first start by finding the note in the array of active notes and removing it. Then if, it was the only note in the array, we simply turn off the volume.<br/>The second argument of the setVolume() method is the transition time, meaning how long it takes the gain to reach the new volume value. In musical terms, if the note is on, it would be the equivalent of the attack time, and if the note is off, it is the equivalent of the release time.</p>
             </section>
         </div>
     </body>
