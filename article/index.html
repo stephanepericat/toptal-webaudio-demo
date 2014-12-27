@@ -227,8 +227,10 @@ function _onmidimessage(e) {
 
 }
 
-self.device = device;
-self.device.onmidimessage = _onmidimessage;
+function _plug(device) {
+    self.device = device;
+    self.device.onmidimessage = _onmidimessage;
+}
                 </pre>
                 <p>Here, we are listening to MIDI events from the device, analysing the data from the <a href="http://www.w3.org/TR/2012/WD-webmidi-20121213/#midievent-interface" target="_blank">MidiEvent Object</a>, and passing it to the appropriate method, either noteOn() or noteOff(), based on the event code (144 for noteOn, 128 for noteOff). We can now add the logic in the respective methods in the audio module to actually generate a sound:</p>
                 <pre>
@@ -270,6 +272,99 @@ function _mtof(note) {
 }
                 </pre>
                 <p>In the noteOff() method, we first start by finding the note in the array of active notes and removing it. Then if, it was the only note in the array, we simply turn off the volume.<br/>The second argument of the setVolume() method is the transition time, meaning how long it takes the gain to reach the new volume value. In musical terms, if the note is on, it would be the equivalent of the attack time, and if the note is off, it is the equivalent of the release time.</p>
+            </section>
+            <section class="WebAnalyser-module">
+                <h2>The WebAnalyser module: visualising our sound</h2>
+                <p>Another interesting feature we can add to our synth is an analyser node, allowing us to display the wave form of our sound using canvas to render it. Creating an analyser node is a bit more complicated than other AudioContext objects, as it requires to also create a scriptProcessor node to actually perform the analysis. We start by creating selecting the canvas element on the DOM:</p>
+                <pre>
+function Analyser(canvas) {
+    self = this;
+
+    self.canvas = angular.element(canvas) || null;
+    self.view = self.canvas[0].getContext('2d') || null;
+    self.javascriptNode = null;
+    self.analyser = null;
+
+    return self;
+}
+                </pre>
+                <p>Then, we add a connect() method, in which we will create both the analyser and the script processor:</p>
+                <pre>
+Analyser.prototype.connect = function(ctx, output) {
+    // setup a javascript node
+    self.javascriptNode = ctx.createScriptProcessor(2048, 1, 1);
+    // connect to destination, else it isn't called
+    self.javascriptNode.connect(ctx.destination);
+
+    // setup an analyzer
+    self.analyser = ctx.createAnalyser();
+    self.analyser.smoothingTimeConstant = 0.3;
+    self.analyser.fftSize = 512;
+
+    // connect the output to the destiantion for sound
+    output.connect(ctx.destination);
+    // connect the output to the analyser for processing
+    output.connect(self.analyser);
+
+    self.analyser.connect(self.javascriptNode);
+
+    // define the colors for the graph
+    var gradient = self.view.createLinearGradient(0, 0, 0, 200);
+    gradient.addColorStop(1, '#000000');
+    gradient.addColorStop(0.75, '#ff0000');
+    gradient.addColorStop(0.25, '#ffff00');
+    gradient.addColorStop(0, '#ffffff');
+
+    // when the audio process event is fired on the script processor
+    // we get the frequency data into an array
+    // and pass it to the drawSpectrum method to render it in the canvas
+    self.javascriptNode.onaudioprocess = function() {
+        // get the average for the first channel
+        var array =  new Uint8Array(self.analyser.frequencyBinCount);
+        self.analyser.getByteFrequencyData(array);
+
+        // clear the current state
+        self.view.clearRect(0, 0, 1000, 325);
+
+        // set the fill style
+        self.view.fillStyle = gradient;
+        drawSpectrum(array);
+    }
+};
+                </pre>
+                <p>We first create a scriptProcessor object and connect it to the destination. Then we create the analyser itself, which we feed with the audio output from the oscillator or filter. Notice how we still need to connect the audio output to the destination so we can hear it! We also need to define the gradient colors of our graph; this is done by calling the createLinearGradient() method of the canvas element.<br/><br/>Finally, the scriptProcessor will fire an 'audioprocess' event on an interval; when this event is fired, we calculate the average frequencies captured by the analyser, we clear the canvas and redraw the new frequency graph by calling the drawSpectrum() method:</p>
+                <pre>
+function drawSpectrum(array) {
+    for (var i = 0; i < (array.length); i++) {
+        var v = array[i],
+        h = self.canvas.height();
+
+        self.view.fillRect(i * 2, h - (v - (h / 4)), 1, v + (h / 4));
+    }
+}
+                </pre>
+                <p>Last but not least, we will need to modify the wiring of our audio engine a bit to accomodate this new component:</p>
+                <pre>
+// in the _connectFilter() method
+if(self.analyser) {
+    self.analyser.connect(self.ctx, self.filter1);
+} else {
+    self.filter1.connect(self.ctx.destination);
+}
+
+// in the _disconnectFilter() method
+if(self.analyser) {
+    self.analyser.connect(self.ctx, self.amp);
+} else {
+    self.amp.connect(self.ctx.destination);
+}
+                </pre>
+                <p>We now have a nice visualiser which allow us to display the waveform of our synth in real time! This is a bit of work to setup, but it's very interesting and insightful, especially when using filters.</p>
+            </section>
+            <section class="building-upon">
+                <h2>Building up on our synth: adding velocity &amp; detune</h2>
+                <p>we now have a pretty cool synth. But it plays all the note at the same volume. This is because instead of handling the velocity data properly, we simply set the volume to a fix value of <kbd>1.0</kbd>. Let's start by fixing that, and then we will see how we can enable the detune wheel that you can find on most common MIDI keyboards.</p>
+                <h3>Enabling velocity</h3>
             </section>
         </div>
     </body>
