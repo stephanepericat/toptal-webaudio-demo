@@ -407,6 +407,86 @@ function _detune(d) {
 self.osc1.setFrequency(self.currentFreq + self.detuneAmount, self.settings.portamento);
                 </pre>
             </section>
+            <section class="creating-interface">
+                <h2>Creating the interface</h2>
+                <p>So far, we only created a select box to be able to select our MIDI device and a wave form visualiser, but we have no possibility to modiy the sound directly by interacting with the webpage. Let's create a very simple intereface using common form elements, and bind them to our audio engine.</p>
+                <h3>Creating the interface</h3>
+                <p>We will create various form elements to control the sound of our synth:</p>
+                <ul>
+                    <li>A radio group to select the oscillator type</li>
+                    <li>A checkbox to enable / disable the filter</li>
+                    <li>A radio group to select the filter type</li>
+                    <li>Two ranges to control the filter's frequency and resonance</li>
+                    <li>Two ranges to control the attack and release of the gain node</li>
+                </ul>
+                <p>In the end, our interface should look a bit like this:</p>
+                <pre>
+&lt;div class="synth container" ng-controller="WebSynthCtrl"&gt;
+    &lt;h1&gt;webaudio synth&lt;/h1&gt;
+    &lt;div class="form-group"&gt;
+        &lt;select ng-model="activeDevice" class="form-control" ng-options="device.manufacturer + ' ' + device.name for device in devices"&gt;
+            &lt;option value="" disabled&gt;Choose a MIDI device...&lt;/option&gt;
+        &lt;/select&gt;
+    &lt;/div&gt;
+    &lt;div class="col-lg-6 col-md-6 col-sm-6"&gt;
+        &lt;h2&gt;Oscillator&lt;/h2&gt;
+        &lt;div class="form-group"&gt;
+            &lt;h3&gt;Oscillator Type&lt;/h3&gt;
+            &lt;label ng-repeat="t in oscTypes"&gt;
+                &lt;input type="radio" name="oscType" ng-model="synth.oscType" value="{{t}}" ng-checked="'{{t}}' === synth.oscType" /&gt;
+                {{t}}&nbsp;
+            &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;h2&gt;Filter&lt;/h2&gt;
+        &lt;div class="form-group"&gt;
+            &lt;label&gt;
+                &lt;input type="checkbox" ng-model="synth.filterOn" /&gt;
+                enable filter
+            &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class="form-group"&gt;
+            &lt;h3&gt;Filter Type&lt;/h3&gt;
+            &lt;label ng-repeat="t in filterTypes"&gt;
+                &lt;input type="radio" name="filterType" ng-model="synth.filterType" value="{{t}}" ng-disabled="!synth.filterOn" ng-checked="synth.filterOn && '{{t}}' === synth.filterType" /&gt;
+                {{t}}&nbsp;
+            &lt;/label&gt;
+        &lt;/div&gt;
+        &lt;div class="form-group"&gt;
+            &lt;!-- frequency --&gt;
+            &lt;label&gt;filter frequency:&lt;/label&gt;
+            &lt;input type="range" class="form-control" min="50" max="10000" ng-model="synth.filterFreq" ng-disabled="!synth.filterOn" /&gt;
+        &lt;/div&gt;
+        &lt;div class="form-group"&gt;
+            &lt;!-- resonance --&gt;
+            &lt;label&gt;filter resonance:&lt;/label&gt;
+            &lt;input type="range" class="form-control" min="0" max="150" ng-model="synth.filterRes" ng-disabled="!synth.filterOn" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;div class="col-lg-6 col-md-6 col-sm-6"&gt;
+        &lt;!-- frequency analyser goes here --&gt;
+        &lt;div class="panel panel-default"&gt;
+            &lt;div class="panel-heading"&gt;Analyser&lt;/div&gt;
+            &lt;div class="panel-body"&gt;
+                &lt;canvas id="analyser"&gt;&lt;/canvas&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="form-group"&gt;
+            &lt;!-- attack --&gt;
+            &lt;label&gt;attack:&lt;/label&gt;
+            &lt;input type="range" class="form-control" min="50" max="2500" ng-model="synth.attack" /&gt;
+        &lt;/div&gt;
+        &lt;div class="form-group"&gt;
+            &lt;!-- release --&gt;
+            &lt;label&gt;release:&lt;/label&gt;
+            &lt;input type="range" class="form-control" min="50" max="1000" ng-model="synth.release" /&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+
+                </pre>
+                <p>Then, we can define a few methods to bind these controls tour our audio engine.</p>
+                
+            </section>
         </div>
     </body>
 </html>
