@@ -463,10 +463,10 @@ self.osc1.setFrequency(self.currentFreq + self.detuneAmount, self.settings.porta
         &lt;/div&gt;
     &lt;/div&gt;
     &lt;div class="col-lg-6 col-md-6 col-sm-6"&gt;
-        &lt;!-- frequency analyser goes here --&gt;
         &lt;div class="panel panel-default"&gt;
             &lt;div class="panel-heading"&gt;Analyser&lt;/div&gt;
             &lt;div class="panel-body"&gt;
+                &lt;!-- frequency analyser --&gt;
                 &lt;canvas id="analyser"&gt;&lt;/canvas&gt;
             &lt;/div&gt;
         &lt;/div&gt;
@@ -484,8 +484,71 @@ self.osc1.setFrequency(self.currentFreq + self.detuneAmount, self.settings.porta
 &lt;/div&gt;
 
                 </pre>
-                <p>Then, we can define a few methods to bind these controls tour our audio engine.</p>
-                
+                <h3>Binding the interface to the audio engine</h3>
+                <p>Finally, we can define a few methods to bind these controls tour our audio engine.</p>
+                <h4>Controlling the oscillator</h4>
+                <p>For the oscillator, we only need a method allowing us to set the oscialltor type:</p>
+                <pre>
+Oscillator.prototype.setOscType = function(type) {
+    if(type) {
+        self.osc.type = type;
+    }
+}
+                </pre>
+                <h4>Controlling the filter</h4>
+                <p>For the filter, we need three controls: one for the filter type, one for the frequency and one for the resonance. We can also connect the _connectFilter() and _dosconnectFilter() methods to the value of the checkbox.</p>
+                <pre>
+Filter.prototype.setFilterType = function(type) {
+    if(type) {
+        self.filter.type = type;
+    }
+}
+
+Filter.prototype.setFilterFrequency = function(freq) {
+    if(freq) {
+        self.filter.frequency.value = freq;
+    }
+}
+
+Filter.prototype.setFilterResonance = function(res) {
+    if(res) {
+        self.filter.Q.value = res;
+    }
+}
+                </pre>
+                <h4>Controlling the attack and resonance</h4>
+                <p>To shape our sound a bit, we can change the attack and release parameters of the gain node. We need two methods for this:</p>
+                <pre>
+function _setAttack(a) {
+    if(a) {
+        self.settings.attack = a / 1000;
+    }
+}
+
+function _setRelease(r) {
+    if(r) {
+        self.settings.release = r / 1000;
+    }
+}
+                </pre>
+                <h4>Setting up watchers</h4>
+                <p>Finally, in our app's controller, we only need to setup a few watchers and bind them to the various methods we just created:</p>
+                <pre>
+$scope.$watch('synth.oscType', DSP.setOscType);
+$scope.$watch('synth.filterOn', DSP.enableFilter);
+$scope.$watch('synth.filterType', DSP.setFilterType);
+$scope.$watch('synth.filterFreq', DSP.setFilterFrequency);
+$scope.$watch('synth.filterRes', DSP.setFilterResonance);
+$scope.$watch('synth.attack', DSP.setAttack);
+$scope.$watch('synth.release', DSP.setRelease);
+                </pre>
+            </section>
+            <section class="conclusion">
+                <h2>Conclusion</h2>
+                <p>We covered a lot of concepts in this tutorial; mostly, we discovered the WebMIDI APi, which is fairly undocumented apart from the official specification from the W3C. The Google Chrome implementation is pretty straight forward, although the swtich to an iterator object for the input and output devices requires a bit of refactoring for legacy code using the old implementation.</p>
+                <p>As for the WebAudio API, this is a very rich API, and we only covered a few of the capabilities of this API throughout this tutorial. Unlike the WebMIDI API, the WebAudio API is very well documented, in particular on the <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API" target="_blank">Mozilla Developer Network</a>, with a plethor of code examples and detailed lists of the various arguments and events for each components, that will help you implement your own custom browser-based audio applications.</p>
+                <p>As both API's will continue to grow, this will open some very interesting possibilities for JavaScript developers; allowing us to develop fully-featured, browser-based, DAW's that will be able to compete with their Flash equivalents. And for desktop developers, you can also start creating your own cross-platform applications using tools such as <a href="https://github.com/rogerwang/node-webkit" target="_blank">node-webkit</a>.</p>
+                <p>Hopefully, this will spawn a new generation of music tools that will empower users by bridging the gap between the physical world and the cloud.</p>
             </section>
         </div>
     </body>
