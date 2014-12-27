@@ -363,8 +363,21 @@ if(self.analyser) {
             </section>
             <section class="building-upon">
                 <h2>Building up on our synth: adding velocity &amp; detune</h2>
-                <p>we now have a pretty cool synth. But it plays all the note at the same volume. This is because instead of handling the velocity data properly, we simply set the volume to a fix value of <kbd>1.0</kbd>. Let's start by fixing that, and then we will see how we can enable the detune wheel that you can find on most common MIDI keyboards.</p>
+                <p>we now have a pretty cool synth. But it plays every note at the same volume. This is because instead of handling the velocity data properly, we simply set the volume to a fix value of <kbd>1.0</kbd>. Let's start by fixing that, and then we will see how we can enable the detune wheel that you can find on most common MIDI keyboards.</p>
                 <h3>Enabling velocity</h3>
+                <p>If you are unfamiliar with it, the 'velocity' relates to how hard you hit the key on your keyboard. Based on this value, the sound created seems either softer or louder.<br/><br/>In our synth, we can emulate this behavior by simply playing with the volume of the gain node. To do so, we first need to do a bit of math to convert the MIDI data into a float value between 0.0 and 1.0 to pass to the gain node:</p>
+                <pre>
+function _vtov (velocity) {
+    return (velocity / 127).toFixed(2);
+}
+                </pre>
+                <p>The velocity range of a MIDI device is from 0 to 127, so we simply divide that value by 127 and return a float value with two decimals. Then, we can update the _noteOn() method to pass the calcluated value to the gain node:</p>
+                <pre>
+self.amp.setVolume(_vtov(velocity), self.settings.attack);
+                </pre>
+                <p>And that's it! now when we play our synth, we will notice the volumes varies based on how hard we hit the keys on our keyboard.</p>
+                <h3>Enabling the detune wheel on your MIDI keyboard</h3>
+                <p></p>
             </section>
         </div>
     </body>
