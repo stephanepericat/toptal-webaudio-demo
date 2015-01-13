@@ -55,6 +55,9 @@ angular
         $scope.$watch('synth.filterRes', DSP.setFilterResonance);
         $scope.$watch('synth.attack', DSP.setAttack);
         $scope.$watch('synth.release', DSP.setRelease);
+
+        // support for computer keyboard
+        $scope.$watch('synth.useKeyboard', DSP.switchKeyboard);
     }]);
 
 angular

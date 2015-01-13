@@ -1,22 +1,29 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Toptal webaudio demo</title>
+        <title>Toptal Webaudio Demo</title>
         <link href="/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
         <style type="text/css">
-            #analyser {
-                height: 220px;
-                width: 100%;
-            }
+            #analyser {height: 220px; width: 100%}
+            .padded {margin-top: 6px;}
         </style>
     </head>
     <body>
         <div class="synth container" ng-controller="WebSynthCtrl">
-            <h1>webaudio synth</h1>
+            <h1>WebAudio Synth</h1>
             <div class="form-group">
-                <select ng-model="activeDevice" class="form-control" ng-options="device.manufacturer + ' ' + device.name for device in devices">
-                    <option value="" disabled>Choose a MIDI device...</option>
-                </select>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <select class="form-control" ng-disabled="synth.useKeyboard" ng-model="activeDevice" ng-options="device.manufacturer + ' ' + device.name for device in devices">
+                        <option value="" disabled>Choose a MIDI device...</option>
+                    </select>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <label class="padded">
+                        <input type="checkbox" ng-model="synth.useKeyboard" />
+                        use computer keyboard
+                    </label>
+                </div>
+                <div class="clearfix"></div>
             </div>
             <div class="col-lg-6 col-md-6 col-sm-6">
                 <h2>Oscillator</h2>
@@ -76,6 +83,7 @@
         <script src="/vendors/jquery/dist/jquery.min.js"></script>
         <script src="/vendors/angular/angular.min.js"></script>
         <script src="/js/midi.js"></script>
+        <script src="/js/keyboard.js"></script>
         <script src="/js/analyser.js"></script>
         <script src="/js/audio.js"></script>
         <script src="/js/synth.js"></script>
