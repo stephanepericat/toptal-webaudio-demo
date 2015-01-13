@@ -70,7 +70,10 @@ angular
         }
 
         function _onmessage(e) {
-            console.log('post message', e);
+            if(e && e.data) {
+                console.log(e);
+                _onmidimessage(e.data);
+            }
         }
 
         function _enableFilter(enable) {
