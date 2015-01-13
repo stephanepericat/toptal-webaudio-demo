@@ -19,7 +19,8 @@ angular
         };
     })
     .factory('KeyboardHandler', ['$document', '$window', 'Mapping', function($document, $window, mapping) {
-        var currentOctave = 5;
+        var currentOctave = 5,
+            activeNotes = [];
 
         function _octaveUp() {
             if(currentOctave < 9) {
@@ -58,8 +59,9 @@ angular
                 }
             }
 
-            if(midievent) {
+            if(midievent && activeNotes.indexOf(midievent.data[1]) === -1) {
                 $window.postMessage(midievent, '*');
+                activeNotes.push(midievent.data[1]);
             }
         }
 
@@ -93,6 +95,8 @@ angular
                  * TODO: Look at the buggy situation - test with device if reproducable
                  */
                 $window.postMessage(midievent, '*');
+                var pos = activeNotes.indexOf(midievent.data[1]);
+                activeNotes.splice(pos, 1);
             }
         }
 
