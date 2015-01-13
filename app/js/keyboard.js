@@ -19,11 +19,10 @@ angular
         };
     })
     .factory('KeyboardHandler', ['$document', '$window', 'Mapping', function($document, $window, mapping) {
-        // 0 to 10
         var currentOctave = 5;
 
         function _octaveUp() {
-            if(currentOctave < 11) {
+            if(currentOctave < 9) {
                 currentOctave++;
             }
         }
@@ -90,6 +89,9 @@ angular
             }
 
             if(midievent) {
+                /**
+                 * TODO: Look at the buggy situation - test with device if reproducable
+                 */
                 $window.postMessage(midievent, '*');
             }
         }
