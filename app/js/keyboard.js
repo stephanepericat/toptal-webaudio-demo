@@ -91,9 +91,6 @@ angular
             }
 
             if(midievent) {
-                /**
-                 * TODO: Look at the buggy situation - test with device if reproducable
-                 */
                 $window.postMessage(midievent, '*');
                 var pos = activeNotes.indexOf(midievent.data[1]);
                 activeNotes.splice(pos, 1);

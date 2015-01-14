@@ -38,6 +38,11 @@ angular
 
                     self.device = $window;
                     self.device.onmessage = _onmessage;
+                } else {
+                    /**
+                    * TODO: look at plugging back the device
+                    * if there was one selected before enabling the computer keyboard
+                    */
                 }
             }
         }
