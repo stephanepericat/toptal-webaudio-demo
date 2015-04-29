@@ -12,7 +12,7 @@ angular
 
         function _connect() {
             var d = $q.defer(),
-            p = d.promise
+            p = d.promise,
             a = null;
 
             if(_test()) {
