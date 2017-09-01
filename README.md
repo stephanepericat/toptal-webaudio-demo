@@ -48,5 +48,5 @@ To do so, simply checkout the 'keyboard' branch of this repository. The followin
 |   B   |    j    |
 
 You can also change octaves:
-- `z` for octave down
-- `x` for octave up
+ - `z` for octave down
+ - `x` for octave up

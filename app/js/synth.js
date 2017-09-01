@@ -4,16 +4,20 @@
 ////////
 
 angular
-    .module('Synth', ['WebAudio', 'WebAnalyser'])
-    .factory('DSP', ['AudioEngine', 'Analyser', function(Engine, Analyser) {
+    .module('Synth', ['WebAudio', 'WebAnalyser', 'Keyboard'])
+    .factory('DSP', ['AudioEngine', 'Analyser', '$window', 'KeyboardHandler', function(Engine, Analyser, $window, Keyboard) {
         var self = this;
         self.device = null;
         self.analyser = null;
+        self.useKeyboard = false;
 
         Engine.init();
 
         function _unplug() {
-            self.device.onmidimessage = null;
+            if(self.device && self.device.onmidimessage) {
+                self.device.onmidimessage = null;
+            }
+
             self.device = null;
         }
 
@@ -26,6 +30,25 @@ angular
 
                 self.device = device;
                 self.device.onmidimessage = _onmidimessage;
+            }
+        }
+
+        function _switchKeyboard(on) {
+            if(on !== undefined) {
+                _unplug();
+                Keyboard.disable();
+
+                if(on) {
+                    Keyboard.enable();
+
+                    self.device = $window;
+                    self.device.onmessage = _onmessage;
+                } else {
+                    /**
+                    * TODO: look at plugging back the device
+                    * if there was one selected before enabling the computer keyboard
+                    */
+                }
             }
         }
 
@@ -54,7 +77,13 @@ angular
                     Engine.detune(e.data[2]);
                 break;
             }
+        }
 
+        function _onmessage(e) {
+            if(e && e.data) {
+                console.log(e);
+                _onmidimessage(e.data);
+            }
         }
 
         function _enableFilter(enable) {
@@ -68,14 +97,15 @@ angular
         }
 
         return {
-            plug: _plug,
             createAnalyser: _createAnalyser,
+            enableFilter: _enableFilter,
+            plug: _plug,
             setOscType: Engine.osc.setType,
             setFilterType: Engine.filter.setType,
             setAttack: Engine.setAttack,
             setRelease: Engine.setRelease,
             setFilterFrequency: Engine.filter.setFrequency,
             setFilterResonance: Engine.filter.setResonance,
-            enableFilter: _enableFilter
+            switchKeyboard: _switchKeyboard
         };
     }]);
